@@ -1,3 +1,5 @@
+import Image from "next/image";
+
 type Movie = {
   id: number;
   title: string;
@@ -10,7 +12,11 @@ type Movie = {
   original_language: string;
 };
 
-export default async function MovieDetails({ params }: { params: { id: string } }) {
+export default async function MovieDetails({
+  params,
+}: {
+  params: { id: string };
+}) {
   const { id } = params;
 
   const res = await fetch(
@@ -22,9 +28,11 @@ export default async function MovieDetails({ params }: { params: { id: string } 
     <main className="min-h-screen bg-gray-900 text-white p-6">
       <div className="max-w-4xl mx-auto grid md:grid-cols-2 gap-8">
         <div>
-          <img
+          <Image
             src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
             alt={movie.title}
+            width={500}
+            height={750}
             className="rounded-2xl shadow-lg"
           />
         </div>
