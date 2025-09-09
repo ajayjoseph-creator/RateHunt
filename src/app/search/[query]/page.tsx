@@ -1,6 +1,9 @@
+// src/app/search/[query]/page.tsx
+"use client";
 
+import { useEffect, useState } from "react";
 import Image from "next/image";
-import SearchBar from '../../component/searchbar'
+import SearchBar from "../../component/searchbar";
 
 type Movie = {
   id: number;
@@ -8,27 +11,51 @@ type Movie = {
   poster_path: string | null;
 };
 
+type MoviesResponse = {
+  results: Movie[];
+};
+
 type Props = {
   params: { query: string };
 };
 
-export default async function SearchPage({ params }: Props) {
+export default function SearchPage({ params }: Props) {
   const { query } = params;
+  const [data, setData] = useState<MoviesResponse>({ results: [] });
+  const [loading, setLoading] = useState<boolean>(true);
 
-  // Fetch movies from TMDB API
-  const res = await fetch(
-    `https://api.themoviedb.org/3/search/movie?api_key=${process.env.NEXT_PUBLIC_TMDB_API_KEY}&query=${query}`,
-    { next: { revalidate: 60 } }
-  );
+  useEffect(() => {
+    async function fetchMovies() {
+      try {
+        const res = await fetch(
+          `https://api.themoviedb.org/3/search/movie?api_key=${process.env.NEXT_PUBLIC_TMDB_API_KEY}&query=${query}`
+        );
+        if (!res.ok) throw new Error("Failed to fetch search results");
+        const movies = await res.json();
+        setData(movies);
+      } catch (err) {
+        console.error("Error fetching search results:", err);
+      } finally {
+        setLoading(false);
+      }
+    }
 
-  if (!res.ok) throw new Error("Failed to fetch search results");
-  const data = await res.json();
+    fetchMovies();
+  }, [query]);
+
+  if (loading) {
+    return (
+      <main className="p-6 min-h-screen flex items-center justify-center text-white">
+        <p>Loading search results...</p>
+      </main>
+    );
+  }
 
   return (
     <main className="p-6 min-h-screen bg-gray-900 text-white">
       <SearchBar /> {/* SearchBar always visible for new searches */}
       <h1 className="text-2xl font-bold mb-6">
-        Search results for: "{query}"
+        {`Search results for: "${query}"`}
       </h1>
 
       {data.results.length === 0 ? (
