@@ -2,7 +2,7 @@
 import Image from "next/image";
 import LOGO from "../../LOGO.png";
 import Link from "next/link";
-import { FaInstagram, FaLinkedin, FaGithub } from "react-icons/fa";
+import {  FaLinkedin, FaGithub } from "react-icons/fa";
 
 export default function Navbar() {
   return (
@@ -11,13 +11,14 @@ export default function Navbar() {
 
         <Link href="/" className="flex items-center gap-2 group">
           <Image
-            src={LOGO}
-            alt="Logo"
-            width={100}
-            height={100}
-            className="rounded-full transition-transform duration-300 group-hover:scale-110"
-            priority
-          />
+  src={LOGO}
+  alt="Logo"
+  width={100}
+  height={100}
+  sizes="(max-width: 768px) 50px, 100px"
+  className="rounded-full transition-transform duration-300 group-hover:scale-110"
+  priority
+/>
           
         </Link>
 
