@@ -1,6 +1,7 @@
 // src/app/page.tsx
 "use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import SearchBar from "./component/searchbar";
@@ -15,22 +16,35 @@ type MoviesResponse = {
   results: Movie[];
 };
 
-export const dynamic = "force-dynamic"; 
+export default function Home() {
+  const [data, setData] = useState<MoviesResponse>({ results: [] });
+  const [loading, setLoading] = useState<boolean>(true);
 
-export default async function Home() {
-  let data: MoviesResponse = { results: [] };
+  useEffect(() => {
+    async function fetchMovies() {
+      try {
+        const res = await fetch(
+          `https://api.themoviedb.org/3/movie/popular?api_key=${process.env.NEXT_PUBLIC_TMDB_API_KEY}`
+        );
+        if (!res.ok) throw new Error("Failed to fetch movies");
+        const movies = await res.json();
+        setData(movies);
+      } catch (err) {
+        console.error("Error fetching movies:", err);
+      } finally {
+        setLoading(false);
+      }
+    }
 
-  try {
-    const res = await fetch(
-      `https://api.themoviedb.org/3/movie/popular?api_key=${process.env.NEXT_PUBLIC_TMDB_API_KEY}`,
-      { next: { revalidate: 60 } }
+    fetchMovies();
+  }, []);
+
+  if (loading) {
+    return (
+      <main className="p-6 min-h-screen flex items-center justify-center text-white">
+        <p>Loading movies...</p>
+      </main>
     );
-
-    if (!res.ok) throw new Error("Failed to fetch movies");
-
-    data = await res.json();
-  } catch (err) {
-    console.error("Error fetching movies:", err);
   }
 
   return (
