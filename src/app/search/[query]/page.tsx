@@ -1,5 +1,6 @@
 
 import Image from "next/image";
+import SearchBar from '../../component/searchbar'
 
 type Movie = {
   id: number;
@@ -14,6 +15,7 @@ type Props = {
 export default async function SearchPage({ params }: Props) {
   const { query } = params;
 
+  // Fetch movies from TMDB API
   const res = await fetch(
     `https://api.themoviedb.org/3/search/movie?api_key=${process.env.NEXT_PUBLIC_TMDB_API_KEY}&query=${query}`,
     { next: { revalidate: 60 } }
@@ -24,8 +26,9 @@ export default async function SearchPage({ params }: Props) {
 
   return (
     <main className="p-6 min-h-screen bg-gray-900 text-white">
+      <SearchBar /> {/* SearchBar always visible for new searches */}
       <h1 className="text-2xl font-bold mb-6">
-        Search results for: &quot;{query}&quot;
+        Search results for: "{query}"
       </h1>
 
       {data.results.length === 0 ? (
